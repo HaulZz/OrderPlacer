@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OrderPlacer.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,38 +11,27 @@ namespace OrderPlacer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Class : ControllerBase
+    public class OrderController : ControllerBase
     {
-        // GET: api/<Class>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<Class>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
         // POST api/<Class>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public string Post(Order order)
         {
-        }
+            //enviar o pedido para a outra aplicação por api
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5000/");
+            client.DefaultRequestHeaders.Accept.Add(
+               new MediaTypeWithQualityHeaderValue("application/json"));
 
-        // PUT api/<Class>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
 
-        // DELETE api/<Class>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var message = System.Text.Json.JsonSerializer.Serialize(order);
+            var buffer = Encoding.UTF8.GetBytes(message);
+            var byteContent = new ByteArrayContent(buffer);
+            //byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var result = client.PostAsync("order", byteContent).Result;
+
+            return result.ToString();
         }
     }
 }
