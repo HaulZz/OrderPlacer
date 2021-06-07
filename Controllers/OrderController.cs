@@ -4,6 +4,10 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using OrderPlacer.Services;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,22 +20,18 @@ namespace OrderPlacer.Controllers
 
         // POST api/<Class>
         [HttpPost]
-        public string Post(Order order)
+        public IActionResult Post(Order order)
         {
             //enviar o pedido para a outra aplicação por api
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5000/");
-            client.DefaultRequestHeaders.Accept.Add(
-               new MediaTypeWithQualityHeaderValue("application/json"));
+            SendOrderApiService.Send(order);
+            return Accepted(order);
+        }
 
-
-            var message = System.Text.Json.JsonSerializer.Serialize(order);
-            var buffer = Encoding.UTF8.GetBytes(message);
-            var byteContent = new ByteArrayContent(buffer);
-            //byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var result = client.PostAsync("order", byteContent).Result;
-
-            return result.ToString();
+        // Get api/<Class>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Order>> Get(int id)
+        {
+            return await SendOrderApiService.Get(id);
         }
     }
 }

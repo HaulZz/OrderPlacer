@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrderPlacer.Services;
 
 namespace OrderPlacer
 {
@@ -13,6 +14,7 @@ namespace OrderPlacer
     {
         public static void Main(string[] args)
         {
+            SendOrderApiService.Init();
             CreateHostBuilder(args).Build().Run();
         }
 
