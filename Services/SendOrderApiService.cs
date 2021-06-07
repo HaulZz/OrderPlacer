@@ -25,12 +25,7 @@ namespace OrderPlacer.Services
 
         public static void Send(Order order)
         {
-            //var message = System.Text.Json.JsonSerializer.Serialize(order);
-            //var buffer = Encoding.UTF8.GetBytes(message);
-            //var byteContent = new ByteArrayContent(buffer);
             var result = Client.PostAsJsonAsync("order", order).Result;
-            //Console.WriteLine( byteContent);
-            //return result.ToString();
         }
 
         public static async Task<Order> Get(int id)
